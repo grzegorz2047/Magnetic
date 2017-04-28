@@ -54,7 +54,7 @@ public class IsignModelSimplified {
                     doMCSStep();
                     if (i % 10 == 0) {
                         System.out.println("Magnetyzacja: " + calculateMagnetism());
-                        gc.clearRect(0, 0, canvas.getWidth() , canvas.getHeight());
+                        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
                         fillWindow(gc);
                         try {
                             sleep(100);
@@ -161,22 +161,22 @@ public class IsignModelSimplified {
             upNeighbour = nodes[x][arraySize - 1];
         }
 
-        int ep = -currentNodeState * (leftNeighbour + rightNeighbour + upNeighbour + downNeighbour);
-        int ek = currentNodeState * (leftNeighbour + rightNeighbour + upNeighbour + downNeighbour);
-        if (isCurrentEnergyLowerThanFutureEnergy(ek, ep)) {
+        //int ep = -currentNodeState * (leftNeighbour + rightNeighbour + upNeighbour + downNeighbour);
+        //int ek = currentNodeState * (leftNeighbour + rightNeighbour + upNeighbour + downNeighbour);
+        int deltaE = 2 * currentNodeState * (leftNeighbour + rightNeighbour + upNeighbour + downNeighbour);// To jest to samo co odejmowanie ek i ep
+        if (deltaE <= 0) {
             invertNode(x, y);
-        } else { //If we want to go with higher energy
-            int deltaE = ek - ep;
-
-            // System.out.println("delta: " + deltaE + " ep: " + ep + "  ek: " + ek);
-            double p = Math.exp(-deltaE / temperature);
-            double randNow = random.nextDouble() / Double.MAX_VALUE;
-
-            //System.out.println("p: " + p + "      RandNow: " + randNow);
-            if (isRandomlyChosenToInvert(p, randNow)) {
-                invertNode(x, y);
-            }
+            return;
         }
+        // System.out.println("delta: " + deltaE + " ep: " + ep + "  ek: " + ek);
+        double p = Math.exp(-deltaE / temperature);
+        double randNow = random.nextDouble() / Integer.MAX_VALUE;
+
+        //System.out.println("p: " + p + "      RandNow: " + randNow);
+        if (isRandomlyChosenToInvert(p, randNow)) {
+            invertNode(x, y);
+        }
+
     }
 
     private boolean isRandomlyChosenToInvert(double p, double randNow) {
