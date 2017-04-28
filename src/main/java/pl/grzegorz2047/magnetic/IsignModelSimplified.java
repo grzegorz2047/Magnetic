@@ -23,6 +23,7 @@ public class IsignModelSimplified {
     private final int monteCarloSteps;
     private int nodes[][];
     private static Random random = new Random();
+    private static final int SIZE = 4;
 
 
     public IsignModelSimplified(int arraySize, double temperature, int monteCarloSteps) {
@@ -38,7 +39,7 @@ public class IsignModelSimplified {
         Group root = new Group();
         Stage secondStage = new Stage();
 
-        Canvas canvas = new Canvas(400, 400);
+        Canvas canvas = new Canvas(800, 600);
         root.getChildren().add(canvas);
         Scene scene = new Scene(root, 800, 600);
 
@@ -57,7 +58,7 @@ public class IsignModelSimplified {
                         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
                         fillWindow(gc);
                         try {
-                            sleep(100);
+                            sleep(20);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -113,11 +114,12 @@ public class IsignModelSimplified {
                             for (int j = 0; j < arraySize; j++) {
                                 int nodeValue = nodes[i][j];
                                 if (nodeValue == 1) {
-                                    gc.setFill(Color.BLUE);
+                                    gc.setFill(Color.WHITE);
                                 } else {
                                     gc.setFill(Color.BLACK);
                                 }
-                                gc.fillRect(i * 3, j * 3, 3, 3);
+
+                                gc.fillRect(i * SIZE, j * SIZE, SIZE, SIZE);
 
                             }
 
@@ -161,16 +163,16 @@ public class IsignModelSimplified {
             upNeighbour = nodes[x][arraySize - 1];
         }
 
-        //int ep = -currentNodeState * (leftNeighbour + rightNeighbour + upNeighbour + downNeighbour);
-        //int ek = currentNodeState * (leftNeighbour + rightNeighbour + upNeighbour + downNeighbour);
-        int deltaE = 2 * currentNodeState * (leftNeighbour + rightNeighbour + upNeighbour + downNeighbour);// To jest to samo co odejmowanie ek i ep
+        int ep = -currentNodeState * (leftNeighbour + rightNeighbour + upNeighbour + downNeighbour);
+        int ek = currentNodeState * (leftNeighbour + rightNeighbour + upNeighbour + downNeighbour);
+        int deltaE = ek - ep;
         if (deltaE <= 0) {
             invertNode(x, y);
             return;
         }
         // System.out.println("delta: " + deltaE + " ep: " + ep + "  ek: " + ek);
         double p = Math.exp(-deltaE / temperature);
-        double randNow = random.nextDouble() / Integer.MAX_VALUE;
+        double randNow = random.nextDouble() / Double.MAX_VALUE;
 
         //System.out.println("p: " + p + "      RandNow: " + randNow);
         if (isRandomlyChosenToInvert(p, randNow)) {

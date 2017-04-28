@@ -20,7 +20,7 @@ public class Main extends Application {
     public void start(Stage stage) {
         ConfigurationWindow configurationWindow = new ConfigurationWindow();
         configurationWindow.show();
-        IsignModelSimplified model = new IsignModelSimplified(50, 2.4, 50000);
+        IsignModelSimplified model = new IsignModelSimplified(250, 1/10, 50000);
         model.runModel();
         //new MainChart(stage).invoke();
     }
