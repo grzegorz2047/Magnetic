@@ -15,6 +15,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import pl.grzegorz2047.magnetic.IsingModelSimplified;
 
 /**
  * Plik stworzony przez grzegorz2047 27.04.2017.
@@ -22,9 +23,8 @@ import javafx.stage.Stage;
 public class ConfigurationWindow {
 
     private boolean started;
+    private TextField temperatureField;
 
-    public ConfigurationWindow() {
-    }
 
     public void show() {
         if (started) {
@@ -41,7 +41,7 @@ public class ConfigurationWindow {
 
         createLabel(grid, "Temperature:", 2);
 
-        createTextField(grid, 2);
+        this.temperatureField = createTextField(grid, 2);
 
         final Text actiontarget = createTextAction(grid);
 
@@ -72,13 +72,19 @@ public class ConfigurationWindow {
             @Override
             public void handle(ActionEvent e) {
                 actiontarget.setFill(Color.FIREBRICK);
-                actiontarget.setText("Simulation started!");
+                //actiontarget.setText("Simulation params updated!");
+                try {
+                    IsingModelSimplified m =new IsingModelSimplified(50, Double.valueOf(temperatureField.getText()), 50000);
+                    m.runModel();
+                } catch (Exception ex) {
+                    System.out.println("Not valid number given as temperature");
+                }
             }
         });
     }
 
     private Button createButton(GridPane grid) {
-        Button btn = new Button("Start simulation");
+        Button btn = new Button("Start new simulation");
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_CENTER);
         hbBtn.getChildren().add(btn);
@@ -87,9 +93,10 @@ public class ConfigurationWindow {
     }
 
 
-    private void createTextField(GridPane grid, int row) {
-        TextField userTextField = new TextField();
-        grid.add(userTextField, 1, row);
+    private TextField createTextField(GridPane grid, int row) {
+        TextField temperatureField = new TextField();
+        grid.add(temperatureField, 1, row);
+        return temperatureField;
     }
 
     private void createLabel(GridPane grid, String text, int rowIndex) {
