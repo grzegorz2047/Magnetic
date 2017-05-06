@@ -23,22 +23,22 @@ public class ComputationThread extends Thread {
     }
 
     public void run() {
-        MainChart chart = new MainChart(this.secondStage);
+        MainChart chart = new MainChart();
         chart.invoke();
         for (int i = 0; i <= ising.getMonteCarloSteps(); i++) {
             ising.doMCSStep();
             if (i % 100 == 0) {
                 System.out.println("Magnetyzacja: " + ising.calculateMagnetism());
-
-                chart.putMagnetismOnChart(ising.calculateMagnetism(), i);
                 ising.fillWindow(canvas);
+                chart.putMagnetismOnChart(ising.calculateMagnetism(), i);
 
-/*                try {
 
-                    sleep(100);
+                try {
+
+                    sleep(1000);
                 } catch (InterruptedException e) {
                     System.exit(0);
-                }*/
+                }
             }
         }
 

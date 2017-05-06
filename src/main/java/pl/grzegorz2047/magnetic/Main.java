@@ -25,6 +25,17 @@ public class Main extends Application {
 
         Ewentualnie możesz robić czas MCS : magnetyzacja, żeby widzieć co i jak
 
+        Po zapisaniu do plików wartości wrzuconych z wykresów, bierzesz od której linii ma brać wartości linia = DANY MCS
+        a w linii jest dana magnetyzacja w danym MCS.
+
+        Robisz sobie jeszcze jedno okno, gdzie podajesz nazwę pliku, z którego ma brać wartości, podajesz od którego MCSa
+        ma brać magnetyzacje i jeszcze przycisk, żeby rozpoczył przetwarzanie pliku. Po zakończeniu przetwarzania w labelu
+        wyświetla się średnia.
+
+        Potem tę średnia bierzesz do innego okna, gdzie dodajesz sobie średnia magnetyzacja dla danej temperatury.
+        Potrzebujesz przycisk dodaj, który dokłada punkt do wykresu, ewentualnie przycisk do pokazywania wykresu i chowania
+
+        
 
      */
 

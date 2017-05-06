@@ -76,6 +76,7 @@ public class ConfigurationWindow {
                 try {
                     IsingModelSimplified m =new IsingModelSimplified(50, Double.valueOf(temperatureField.getText()), 50000);
                     m.runModel();
+
                 } catch (Exception ex) {
                     System.out.println("Not valid number given as temperature");
                 }

@@ -88,6 +88,7 @@ public class IsingModelSimplified {
     }
 
     public void fillWindow(Canvas canvas) {
+        
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         Platform.runLater(
