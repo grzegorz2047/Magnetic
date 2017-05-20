@@ -15,15 +15,17 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import pl.grzegorz2047.magnetic.IsingModelSimplified;
+import pl.grzegorz2047.magnetic.Simulation;
 
 /**
  * Plik stworzony przez grzegorz2047 27.04.2017.
  */
-public class ConfigurationWindow {
+public class SimulationStartWindow {
 
     private boolean started;
     private TextField temperatureField;
+    private TextField monteCarloStepsField;
+    private TextField spinNetworkSizeField;
 
 
     public void show() {
@@ -33,40 +35,46 @@ public class ConfigurationWindow {
         started = true;
         GridPane grid = prepareGrid();
 
-        createText(grid);
+        createHeader(grid, "Ustawienia symulacji");
+        createLabel(grid, "Wielkość sieci spinów:", 1);
+        createLabel(grid, "Testowana temperatura:", 2);
+        createLabel(grid, "Liczba kroków Monte Carlo:", 3);
 
-        createLabel(grid, "Network size:", 1);
-
-        createTextField(grid, 1);
-
-        createLabel(grid, "Temperature:", 2);
-
+        this.spinNetworkSizeField = createTextField(grid, 1);
         this.temperatureField = createTextField(grid, 2);
+        this.monteCarloStepsField = createTextField(grid, 3);
 
         final Text actiontarget = createTextAction(grid);
 
-        Button btn = createButton(grid);
 
-        registerButtonListener(actiontarget, btn);
+        Button btn = createStartSimulationButton(grid);
 
-        createAndShowScene(grid);
+
+
+        registerOnClickListenerForStartSimulationButton(actiontarget, btn);
+
+        Stage window = new Stage();
+        window.setTitle("Symulator magnetyzacji");
+        window.setResizable(false);
+        window.setWidth(400);
+        window.setHeight(400);
+        prepareWindowSpaceForWindow(grid, window);
+        window.show();
     }
 
     private Text createTextAction(GridPane grid) {
         final Text actiontarget = new Text();
-        grid.add(actiontarget, 1, 6);
+        grid.add(actiontarget, 0, 6);
         return actiontarget;
     }
 
-    private void createAndShowScene(GridPane grid) {
-        Stage secondStage = new Stage();
-        Scene scene = new Scene(grid, 300, 275);
-        secondStage.setScene(scene);
-        scene.getStylesheets().add("SecondStage.css");
-        secondStage.show();
+    private void prepareWindowSpaceForWindow(GridPane grid, Stage window) {
+        Scene windowSpace = new Scene(grid, 300, 300);
+        window.setScene(windowSpace);
+        windowSpace.getStylesheets().add("WindowSpaceViewProp.css");
     }
 
-    private void registerButtonListener(final Text actiontarget, Button btn) {
+    private void registerOnClickListenerForStartSimulationButton(final Text actiontarget, Button btn) {
         btn.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
@@ -74,17 +82,17 @@ public class ConfigurationWindow {
                 actiontarget.setFill(Color.FIREBRICK);
                 //actiontarget.setText("Simulation params updated!");
                 try {
-                    IsingModelSimplified m =new IsingModelSimplified(50, Double.valueOf(temperatureField.getText()), 50000);
-                    m.runModel();
+                    Simulation m = new Simulation(Integer.valueOf(spinNetworkSizeField.getText()), Double.valueOf(temperatureField.getText()), Integer.valueOf(monteCarloStepsField.getText()));
+                    m.startSimulation();
 
                 } catch (Exception ex) {
-                    System.out.println("Not valid number given as temperature");
+                    actiontarget.setText("Niepoprawne wartości!");
                 }
             }
         });
     }
 
-    private Button createButton(GridPane grid) {
+    private Button createStartSimulationButton(GridPane grid) {
         Button btn = new Button("Start new simulation");
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_CENTER);
@@ -105,8 +113,8 @@ public class ConfigurationWindow {
         grid.add(userName, 0, rowIndex);
     }
 
-    private void createText(GridPane grid) {
-        Text scenetitle = new Text("Simulation properties");
+    private void createHeader(GridPane grid, String headerName) {
+        Text scenetitle = new Text(headerName);
         scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         grid.add(scenetitle, 0, 0, 2, 1);
     }
@@ -114,7 +122,7 @@ public class ConfigurationWindow {
     private GridPane prepareGrid() {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
-        grid.setHgap(10);
+        grid.setHgap(15);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
         return grid;

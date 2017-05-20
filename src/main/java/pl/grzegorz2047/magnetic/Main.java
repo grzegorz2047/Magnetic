@@ -2,8 +2,7 @@ package pl.grzegorz2047.magnetic;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import pl.grzegorz2047.magnetic.window.ConfigurationWindow;
-import pl.grzegorz2047.magnetic.window.MainChart;
+import pl.grzegorz2047.magnetic.window.SimulationStartWindow;
 
 import static java.lang.Thread.sleep;
 
@@ -35,16 +34,15 @@ public class Main extends Application {
         Potem tę średnia bierzesz do innego okna, gdzie dodajesz sobie średnia magnetyzacja dla danej temperatury.
         Potrzebujesz przycisk dodaj, który dokłada punkt do wykresu, ewentualnie przycisk do pokazywania wykresu i chowania
 
-        
+
 
      */
 
 
     @Override
     public void start(Stage stage) {
-        ConfigurationWindow configurationWindow = new ConfigurationWindow();
-        configurationWindow.show();
-
+        SimulationStartWindow simulationStartWindow = new SimulationStartWindow();
+        simulationStartWindow.show();
     }
 
     @Override

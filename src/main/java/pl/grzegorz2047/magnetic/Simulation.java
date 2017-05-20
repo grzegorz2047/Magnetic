@@ -1,22 +1,21 @@
 package pl.grzegorz2047.magnetic;
 
-import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import pl.grzegorz2047.magnetic.window.MainChart;
+import javafx.stage.WindowEvent;
+import pl.grzegorz2047.magnetic.window.MagnetismChart;
 
 import java.util.Random;
-
-import static java.lang.Thread.sleep;
 
 /**
  * Plik stworzony przez grzegorz2047 27.04.2017.
  */
-public class IsingModelSimplified {
+public class Simulation {
 
 
     private final int arraySize;
@@ -25,33 +24,79 @@ public class IsingModelSimplified {
     private int nodes[][];
     private static Random random = new Random();
     private final int SIZE = 3;
-    private ComputationThread computationThread;
-    private Stage secondStage;
+    private Thread computationThread;
+    private Stage simulationWindow;
     private Canvas canvas;
+    private static int simulationNumber = 1;
+    private boolean stopped;
+    private int doneNumberOfMonteCarloSteps = 0;
+    private MagnetismChart chart;
 
-    public IsingModelSimplified(int arraySize, double temperature, int monteCarloSteps) {
+    public Simulation(int arraySize, double temperature, int monteCarloSteps) {
         this.arraySize = arraySize;
         this.temperature = temperature;
         this.monteCarloSteps = monteCarloSteps;
     }
 
-    public boolean runModel() {
-        nodes = new int[arraySize][arraySize];
-        randomizeNodes();
+    public boolean startSimulation() {
+        simulationNumber++;
+        initNodes();
+        createSimulationWindow();
+        createMagnetismChart();
+        prepareComputationThread();
+        return true;
+    }
 
+    private void createMagnetismChart() {
+        chart = new MagnetismChart();
+        chart.invoke();
+    }
+
+    private void prepareComputationThread() {
+        computationThread = new Thread(new ComputationTask(this));
+        computationThread.setDaemon(true);
+        computationThread.start();
+        registerOnCloseSimulationWindowListener();
+    }
+
+    private void createSimulationWindow() {
         Group root = new Group();
-        secondStage = new Stage();
+        simulationWindow = new Stage();
 
         canvas = new Canvas(800, 700);
         root.getChildren().add(canvas);
-        Scene scene = new Scene(root, 800, 700);
-
-        secondStage.setScene(scene);
-        secondStage.show();
-        computationThread = new ComputationThread(this, canvas, secondStage);
-        computationThread.start();
-        return true;
+        Scene simulationWindowSpace = new Scene(root, 800, 700);
+        simulationWindow.setScene(simulationWindowSpace);
+        simulationWindow.show();
     }
+
+    private void initNodes() {
+        nodes = new int[arraySize][arraySize];
+        randomizeNodes();
+    }
+
+    public void renderVisualisation() {
+        Simulation.this.fillWindow(canvas);
+        double magnetic = Simulation.this.calculateMagnetism();
+        System.out.println("Magnetyzacja: " + magnetic);
+        chart.putMagnetismOnChart(magnetic, doneNumberOfMonteCarloSteps);
+        simulationWindow.setTitle("Sim #" + simulationNumber + " magnetyzacja: " + magnetic + " MCS: " + doneNumberOfMonteCarloSteps);
+        /*try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            System.exit(0);
+        }*/
+    }
+
+    private void registerOnCloseSimulationWindowListener() {
+        simulationWindow.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            public void handle(WindowEvent we) {
+                computationThread.interrupt();
+                stopped = true;
+            }
+        });
+    }
+
 
     private void randomizeNodes() {
         for (int i = 0; i < arraySize; i++) {
@@ -80,6 +125,7 @@ public class IsingModelSimplified {
         for (int i = 0; i < Math.pow(arraySize, 2); i++) {
             touchNode();
         }
+        doneNumberOfMonteCarloSteps++;
 
     }
 
@@ -87,31 +133,24 @@ public class IsingModelSimplified {
         nodes[i][j] = -nodes[i][j];
     }
 
-    public void fillWindow(Canvas canvas) {
-        
+    private void fillWindow(Canvas canvas) {
+
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        Platform.runLater(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < arraySize; i++) {
-                            for (int j = 0; j < arraySize; j++) {
-                                int nodeValue = nodes[i][j];
-                                if (nodeValue == 1) {
-                                    gc.setFill(Color.WHITE);
-                                } else {
-                                    gc.setFill(Color.BLACK);
-                                }
-
-                                gc.fillRect(i * SIZE, j * SIZE, SIZE, SIZE);
-
-                            }
-
-                        }
-                    }
+        for (int i = 0; i < arraySize; i++) {
+            for (int j = 0; j < arraySize; j++) {
+                int nodeValue = nodes[i][j];
+                if (nodeValue == 1) {
+                    gc.setFill(Color.WHITE);
+                } else {
+                    gc.setFill(Color.BLACK);
                 }
-        );
+
+                gc.fillRect(i * SIZE, j * SIZE, SIZE, SIZE);
+
+            }
+
+        }
     }
 
     private void touchNode() {
@@ -169,6 +208,7 @@ public class IsingModelSimplified {
 
     public void stopModel() {
         computationThread.interrupt();
+        stopped = true;
 
     }
 

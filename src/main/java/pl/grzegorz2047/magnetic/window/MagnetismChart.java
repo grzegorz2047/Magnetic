@@ -12,11 +12,11 @@ import javafx.stage.Stage;
  * Plik stworzony przez grzegorz2047 27.04.2017.
  */
 
-public class MainChart {
+public class MagnetismChart {
     private Stage stage;
     private XYChart.Series series;
 
-    public MainChart() {
+    public MagnetismChart() {
 
     }
 
