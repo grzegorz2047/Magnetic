@@ -6,6 +6,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.stage.Stage;
 import pl.grzegorz2047.magnetic.window.MagnetismChart;
 
+import java.io.File;
+import java.io.FileWriter;
+
 import static java.lang.Thread.sleep;
 
 /**
@@ -21,9 +24,13 @@ public class ComputationTask extends Task {
 
     @Override
     protected Object call() throws Exception {
+        File file = new File(String.valueOf(ising.getTemperature()));
+        FileWriter fileWriter = new FileWriter(file);
         for (int i = 1; i <= ising.getMonteCarloSteps(); i++) {
             ising.doMCSStep();
-            if (i % 100 == 0) {
+            fileWriter.write(String.valueOf(ising.calculateMagnetism()));
+            fileWriter.write(System.lineSeparator());
+            if (i % 500 == 0) {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
@@ -34,7 +41,10 @@ public class ComputationTask extends Task {
                     return false;
                 }
             }
+
         }
+        fileWriter.flush();
+        fileWriter.close();
 
         return true;
     }

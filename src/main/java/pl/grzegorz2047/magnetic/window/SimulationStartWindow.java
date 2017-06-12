@@ -17,6 +17,12 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import pl.grzegorz2047.magnetic.Simulation;
 
+import java.io.File;
+import java.nio.DoubleBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
 /**
  * Plik stworzony przez grzegorz2047 27.04.2017.
  */
@@ -26,7 +32,9 @@ public class SimulationStartWindow {
     private TextField temperatureField;
     private TextField monteCarloStepsField;
     private TextField spinNetworkSizeField;
-
+    private TextField lineFileField;
+    private TextField filenameField;
+    private MagnetismChart m;
 
     public void show() {
         if (started) {
@@ -39,19 +47,26 @@ public class SimulationStartWindow {
         createLabel(grid, "Wielkość sieci spinów:", 1);
         createLabel(grid, "Testowana temperatura:", 2);
         createLabel(grid, "Liczba kroków Monte Carlo:", 3);
+        createLabel(grid, "Od ilu wziac: ", 4);
+        createLabel(grid, "Z jakiego pliku: ", 5);
+
 
         this.spinNetworkSizeField = createTextField(grid, 1);
         this.temperatureField = createTextField(grid, 2);
         this.monteCarloStepsField = createTextField(grid, 3);
+        this.lineFileField = createTextField(grid, 4);
+        this.filenameField = createTextField(grid, 5);
 
         final Text actiontarget = createTextAction(grid);
 
 
-        Button btn = createStartSimulationButton(grid);
+        Button startBtn = createStartSimulationButton(grid);
+
+        Button loadBtn = createLoadDataButton(grid);
 
 
-
-        registerOnClickListenerForStartSimulationButton(actiontarget, btn);
+        registerOnClickListenerForStartSimulationButton(actiontarget, startBtn);
+        registerOnClickListenerForLoadButton(loadBtn);
 
         Stage window = new Stage();
         window.setTitle("Symulator magnetyzacji");
@@ -92,15 +107,55 @@ public class SimulationStartWindow {
         });
     }
 
+
+    private void registerOnClickListenerForLoadButton(Button btn) {
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent e) {
+                //actiontarget.setText("Simulation params updated!");
+                try {
+                    if (m == null) {
+                        m = new MagnetismChart();
+                        m.invoke("temperatura", "średnia magnetyzacja");
+                    }
+
+                    double med = 0;
+                    List<String> strings = Files.readAllLines(new File(filenameField.getText()).toPath());
+                    for (int i = Integer.valueOf(lineFileField.getText()); i < strings.size(); i++) {
+                        med += Double.valueOf(strings.get(i));
+                    }
+                    med = med / (strings.size() - Integer.valueOf(lineFileField.getText()));
+                    m.putMagnetismOnChart(med, Double.valueOf(filenameField.getText()));
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+    }
+
     private Button createStartSimulationButton(GridPane grid) {
-        Button btn = new Button("Start new simulation");
-        HBox hbBtn = new HBox(10);
+        Button btn = new Button("Nowa symulacja");
+        btn.setMinWidth(40);
+        HBox hbBtn = new HBox(15);
+
         hbBtn.setAlignment(Pos.BOTTOM_CENTER);
         hbBtn.getChildren().add(btn);
-        grid.add(hbBtn, 1, 4);
+        grid.add(hbBtn, 1, 6);
         return btn;
     }
 
+    private Button createLoadDataButton(GridPane grid) {
+        Button btn = new Button("Z pliku");
+        btn.setMinWidth(40);
+        HBox hbBtn = new HBox(5);
+        hbBtn.setMinWidth(40);
+        hbBtn.setAlignment(Pos.BOTTOM_CENTER);
+        hbBtn.getChildren().add(btn);
+        grid.add(hbBtn, 1, 7);
+        return btn;
+    }
 
     private TextField createTextField(GridPane grid, int row) {
         TextField temperatureField = new TextField();

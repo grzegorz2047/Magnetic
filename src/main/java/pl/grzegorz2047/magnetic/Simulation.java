@@ -49,7 +49,7 @@ public class Simulation {
 
     private void createMagnetismChart() {
         chart = new MagnetismChart();
-        chart.invoke();
+        chart.invoke("Kroki Monte Carlo", "Magnetyzacja");
     }
 
     private void prepareComputationThread() {

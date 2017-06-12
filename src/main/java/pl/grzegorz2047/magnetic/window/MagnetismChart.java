@@ -20,12 +20,13 @@ public class MagnetismChart {
 
     }
 
-    public void invoke() {
+    public void invoke(String temp, String med) {
 
         series = new XYChart.Series();
         final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Magnetyzacja");
+        xAxis.setLabel(temp);
+        yAxis.setLabel(med);
         //creating the chart
         final LineChart<Number, Number> lineChart =
                 new LineChart<Number, Number>(xAxis, yAxis);
@@ -35,11 +36,11 @@ public class MagnetismChart {
                     @Override
                     public void run() {
                         stage = new Stage();
-                        stage.setTitle("Wykres liniowy");
+                        stage.setTitle("Wykres");
                         series.setName("Przebieg");
                         //defining the axes
                         Group root = new Group();
-                        lineChart.setTitle("Simulator");
+                        lineChart.setTitle("Eksperyment");
                         //defining a series
 
 
@@ -55,7 +56,7 @@ public class MagnetismChart {
         );
     }
 
-    public void putMagnetismOnChart(double magnetism, int mcsNumber) {
+    public void putMagnetismOnChart(double magnetism, double mcsNumber) {
         series.getData().add(new XYChart.Data(mcsNumber, magnetism));
     }
 }
