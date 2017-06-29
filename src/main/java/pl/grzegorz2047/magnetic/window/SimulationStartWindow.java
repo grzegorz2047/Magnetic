@@ -126,6 +126,7 @@ public class SimulationStartWindow {
                         med += Double.valueOf(strings.get(i));
                     }
                     med = med / (strings.size() - Integer.valueOf(lineFileField.getText()));
+                    System.out.println("Wczytana srednia: " + med);
                     m.putMagnetismOnChart(med, Double.valueOf(filenameField.getText()));
 
                 } catch (Exception ex) {
