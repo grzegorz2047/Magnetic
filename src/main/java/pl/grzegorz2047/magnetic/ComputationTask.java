@@ -30,7 +30,7 @@ public class ComputationTask extends Task {
             ising.doMCSStep();
             fileWriter.write(String.valueOf(ising.calculateMagnetism()));
             fileWriter.write(System.lineSeparator());
-            if (i % 500 == 0) {
+            if (i % 10 == 0) {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
